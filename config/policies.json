@@ -1,0 +1,53 @@
+{
+  "policies": [
+    {
+      "handler": {
+        "export": "Auth0JwtInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "allowUnauthenticatedRequests": false,
+          "auth0Domain": "$env(AUTH0_DOMAIN)",
+          "audience": "$env(AUTH0_AUDIENCE)"
+        }
+      },
+      "name": "auth0-jwt-auth-inbound",
+      "policyType": "auth0-jwt-auth-inbound"
+    },
+    {
+      "handler": {
+        "export": "OpenIdJwtInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "allowUnauthenticatedRequests": false,
+          "audience": "$env(AUTH_AUDIENCE)",
+          "issuer": "$env(AUTH_ISSUER)",
+          "jwkUrl": "$env(JWK_URL)"
+        }
+      },
+      "name": "open-id-jwt-auth-inbound",
+      "policyType": "open-id-jwt-auth-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/add-headers)",
+        "options": {
+          "config1": "YOUR_VALUE",
+          "config2": true
+        }
+      },
+      "name": "add-headers-inbound",
+      "policyType": "custom-code-inbound"
+    }
+  ],
+  "corsPolicies": [
+    {
+      "name": "moonshot-cors",
+      "allowedOrigins": ["http://localhost:3000", "https://moonshot-app.gcp-dv.msh-np.sagent.online", "https://moonshot-app.gcp-qa.msh-np.sagent.online"],
+      "allowedHeaders": [ "*", "" ],
+      "allowedMethods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+      "maxAge": 600,
+      "allowCredentials": true
+    }
+  ]
+}

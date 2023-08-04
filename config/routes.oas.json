@@ -1,0 +1,718 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Platform API",
+    "description": "Search, Get and Post Loan Details to and From Finxact"
+  },
+  "paths": {
+    "/feature": {
+      "get": {
+        "tags": [
+          "feature"
+        ],
+        "summary": "Get all features",
+        "description": "Returns all features defined",
+        "operationId": "getFeatures",
+        "responses": {
+          "200": {
+            "description": "Returns Features defined in Platform Admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No endpoint found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "moonshot-cors",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "${env.SVC_PLATFORM}"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "open-id-jwt-auth-inbound"
+            ]
+          }
+        }
+      },
+      "x-zuplo-path": {
+        "pathMode": "url-pattern"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PermissionRequestList": {
+        "description": "List of Permissions for Role",
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PermissionObj"
+            }
+          }
+        }
+      },
+      "PermissionObj": {
+        "description": "Permission Details",
+        "type": "object",
+        "properties": {
+          "featureId": {
+            "type": "integer"
+          },
+          "moduleName": {
+            "type": "string"
+          },
+          "canRead": {
+            "type": "boolean"
+          },
+          "canWrite": {
+            "type": "boolean"
+          },
+          "canCreate": {
+            "type": "boolean"
+          },
+          "canUpdate": {
+            "type": "boolean"
+          },
+          "canDelete": {
+            "type": "boolean"
+          },
+          "canList": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AvailableFeatureList": {
+        "description": "List of features available for organization",
+        "type": "object",
+        "properties": {
+          "orgId": {
+            "type": "integer"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailableFeature"
+            }
+          }
+        }
+      },
+      "AvailableFeature": {
+        "description": "Feature Details",
+        "type": "object",
+        "properties": {
+          "featureId": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "modules": {
+            "type": "string"
+          }
+        }
+      },
+      "FeatureList": {
+        "description": "List of features with paging info",
+        "type": "object",
+        "properties": {
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feature"
+            }
+          }
+        }
+      },
+      "Feature": {
+        "description": "Feature Details",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "ModuleList": {
+        "description": "List of modules with paging info",
+        "type": "object",
+        "properties": {
+          "modules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Module"
+            }
+          }
+        }
+      },
+      "Module": {
+        "description": "Module Details",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "string"
+          }
+        }
+      },
+      "RoleList": {
+        "description": "List of roles with paging info",
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          }
+        }
+      },
+      "UserList": {
+        "description": "List of users with paging info",
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "UserRoleList": {
+        "description": "List of roles with permissions for a user",
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            }
+          }
+        }
+      },
+      "UserDetails": {
+        "description": "User's name, email and roles",
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "orgName": {
+            "type": "string"
+          },
+          "orgId": {
+            "type": "integer"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          }
+        }
+      },
+      "UserAvailableRoles": {
+        "description": "User's name, email and roles",
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserAvailableRole"
+            }
+          }
+        }
+      },
+      "Permission": {
+        "description": "Permission defined for role",
+        "type": "object",
+        "properties": {
+          "featureName": {
+            "type": "string"
+          },
+          "moduleName": {
+            "type": "string"
+          },
+          "canRead": {
+            "type": "boolean"
+          },
+          "canWrite": {
+            "type": "boolean"
+          },
+          "canCreate": {
+            "type": "boolean"
+          },
+          "canUpdate": {
+            "type": "boolean"
+          },
+          "canDelete": {
+            "type": "boolean"
+          },
+          "canList": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UserUpdateRequest": {
+        "description": "Edit User Information",
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "required": [
+          "roleId",
+          "roleName",
+          "features",
+          "scope",
+          "orgName"
+        ],
+        "properties": {
+          "roleId": {
+            "type": "integer"
+          },
+          "roleName": {
+            "type": "string"
+          },
+          "features": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "orgName": {
+            "type": "string"
+          }
+        }
+      },
+      "AvailableRole": {
+        "type": "object",
+        "required": [
+          "roleId",
+          "roleName",
+          "features",
+          "scope",
+          "orgName"
+        ],
+        "properties": {
+          "roleId": {
+            "type": "integer"
+          },
+          "roleName": {
+            "type": "string"
+          },
+          "features": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "orgName": {
+            "type": "string"
+          }
+        }
+      },
+      "RoleDetails": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer"
+          },
+          "roleName": {
+            "type": "string"
+          },
+          "orgName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            }
+          }
+        }
+      },
+      "UserRolesRequest": {
+        "type": "object",
+        "required": [
+          "userId",
+          "roleIds"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "roleIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "userId",
+          "firstName",
+          "middleName",
+          "lastName",
+          "statusCode",
+          "email",
+          "roles",
+          "orgName"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "statusCode": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "string"
+          },
+          "orgName": {
+            "type": "string"
+          }
+        }
+      },
+      "UserRequest": {
+        "type": "object",
+        "required": [
+          "userId",
+          "firstName",
+          "middleName",
+          "lastName",
+          "statusCode",
+          "email",
+          "roles"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "statusCode": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "string"
+          },
+          "orgId": {
+            "type": "integer"
+          }
+        }
+      },
+      "RoleRequest": {
+        "type": "object",
+        "required": [
+          "roleId",
+          "roleName",
+          "roleDesc",
+          "orgId"
+        ],
+        "properties": {
+          "roleId": {
+            "type": "integer"
+          },
+          "roleName": {
+            "type": "string"
+          },
+          "roleDesc": {
+            "type": "string"
+          },
+          "orgId": {
+            "type": "integer"
+          }
+        }
+      },
+      "ResponseMsg": {
+        "type": "object",
+        "required": [
+          "id",
+          "idType",
+          "processType",
+          "responseStatus"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "idType": {
+            "type": "string"
+          },
+          "processType": {
+            "type": "string"
+          },
+          "responseStatus": {
+            "type": "string"
+          }
+        }
+      },
+      "OrganizationList": {
+        "description": "List of Organization with paging info",
+        "type": "object",
+        "properties": {
+          "Organizations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Organization"
+            }
+          }
+        }
+      },
+      "Organization": {
+        "type": "object",
+        "required": [
+          "organizationId",
+          "organizationCode",
+          "organizationTypeCode",
+          "organizationName"
+        ],
+        "properties": {
+          "organizationId": {
+            "type": "integer"
+          },
+          "organizationCode": {
+            "type": "string"
+          },
+          "organizationTypeCode": {
+            "type": "string"
+          },
+          "organizationName": {
+            "type": "string"
+          }
+        }
+      },
+      "UserAvailableRole": {
+        "type": "object",
+        "required": [
+          "roleId",
+          "roleName"
+        ],
+        "properties": {
+          "roleId": {
+            "type": "integer"
+          },
+          "roleName": {
+            "type": "string"
+          }
+        }
+      },
+      "LoanProductList": {
+        "description": "List of LoanProducts",
+        "type": "object",
+        "properties": {
+          "loanProducts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LoanProduct"
+            }
+          }
+        }
+      },
+      "LoanProductRequest": {
+        "description": "LoanProduct Request Details",
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer"
+          },
+          "orgId": {
+            "type": "integer"
+          },
+          "orgName": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "productDesc": {
+            "type": "string"
+          },
+          "amortizationType": {
+            "type": "string"
+          },
+          "amortizationPeriodCount": {
+            "type": "integer"
+          },
+          "amortizationPeriodType": {
+            "type": "string"
+          },
+          "amortizationTypeOtherDesc": {
+            "type": "string"
+          }
+        }
+      },
+      "LoanProduct": {
+        "description": "LoanProduct Details",
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer"
+          },
+          "orgId": {
+            "type": "integer"
+          },
+          "orgName": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "productDesc": {
+            "type": "string"
+          },
+          "amortizationType": {
+            "type": "string"
+          },
+          "amortizationPeriodCount": {
+            "type": "integer"
+          },
+          "amortizationPeriodType": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "message",
+          "code"
+        ],
+        "properties": {
+          "message": {
+            "description": "A human readable error message",
+            "type": "string"
+          },
+          "code": {
+            "description": "Specifies the error code",
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 600
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "client_id"
+      }
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    }
+  ]
+}

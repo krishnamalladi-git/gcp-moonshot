@@ -11,7 +11,7 @@
         "tags": [
           "feature"
         ],
-        "summary": "Get all features",
+        "summary": "Get all features1",
         "description": "Returns all features defined",
         "operationId": "getFeatures",
         "responses": {
